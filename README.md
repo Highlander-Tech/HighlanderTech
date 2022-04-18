@@ -1,4 +1,4 @@
-# Highlander First Model
+# Highlander Deprecado
 
 # Descrição 
 
@@ -8,7 +8,7 @@ Primeiro modelo de site para HIGHLANDER, momento onde eu só trabalhava com mont
 
 [Novo modelo](https://github.com/giovanifranz/HighlanderTech): highlandertech.com.br
 
-![Logo Highlander Tech](https://github.com/giovanifranz/HighlanderFirstModel/blob/main/public/Logo-Tech-AF-01.png?raw=true)
+![Logo Highlander Tech](https://raw.githubusercontent.com/giovanifranz/HighlanderTech/deprecated/public/Logo-Tech-AF-01.png)
 
 
 ## Instalação
