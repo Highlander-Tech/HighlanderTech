@@ -22,7 +22,7 @@ export const trpc = createTRPCNext<AppRouter>({
   },
 
   ssr: true,
-  responseMeta({ ctx, clientErrors }) {
+  /*responseMeta({ ctx, clientErrors }) {
     if (clientErrors.length) {
       return {
         status: clientErrors[0].data?.httpStatus ?? 500,
@@ -34,5 +34,5 @@ export const trpc = createTRPCNext<AppRouter>({
         'cache-control': `s-maxage=1, stale-while-revalidate=${ONE_SECOND}`,
       },
     };
-  },
+  },*/
 });
