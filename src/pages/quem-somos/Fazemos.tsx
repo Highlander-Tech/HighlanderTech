@@ -17,7 +17,7 @@ function Fazemos({ base64, image }: Props) {
         width={400}
         height={375}
         blurDataURL={base64}
-        placeholder="blur"
+        //placeholder="blur"
       />
       <article className="mx-0 flex flex-1 flex-col text-center md:text-left">
         <header>

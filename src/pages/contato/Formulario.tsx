@@ -1,31 +1,27 @@
 import { useCallback, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import type { ToastOptions } from 'react-toastify';
 import { toast, ToastContainer } from 'react-toastify';
-
+import { z } from 'zod';
 import { Subtitle } from 'components';
 import { useSelect } from 'hooks/useSelect';
+import { zodResolver } from '@hookform/resolvers/zod';
 
-const regex = new RegExp(
-  '^(([^<>()[\\]\\\\.,;:\\s@\\"]+(\\.[^<>()[\\]\\\\.,;:\\s@\\"]+)*)|' +
-    '(\\".+\\"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])' +
-    '|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
-);
+import { trpc } from 'utils/trpc';
 
-const TOAST_CONFIG: ToastOptions = {
-  position: 'top-right',
-  autoClose: 1500,
-  hideProgressBar: false,
-  closeOnClick: true,
-  pauseOnHover: false,
-  draggable: true,
-  progress: undefined,
-};
+export const emailSchema = z.object({
+  email: z.string().email().max(45),
+  mensagem: z.string().max(256),
+  nome: z.string().max(120),
+  service: z.enum(['sites', 'maintenance', 'mounting']),
+  telefone: z.string().max(20),
+});
+
+export type EmailSchema = z.infer<typeof emailSchema>;
 
 export function Formulario() {
   const { select, setSelect } = useSelect();
 
-  const INITIAL_STATE: FormValues = {
+  const INITIAL_STATE: EmailSchema = {
     service: select,
     nome: '',
     email: '',
@@ -33,38 +29,44 @@ export function Formulario() {
     mensagem: '',
   };
 
-  const { register, handleSubmit, watch, reset } = useForm<FormValues>({
+  const { register, handleSubmit, watch, reset } = useForm<EmailSchema>({
     defaultValues: INITIAL_STATE,
+    resolver: zodResolver(emailSchema),
   });
 
   const onChange = watch('service') as Select;
 
+  const { mutate, isSuccess, isLoading, isError } = trpc.email.useMutation();
+
   const sendEmail = useCallback(
-    async (values: FormValues) => {
-      const data = { ...values, service: select };
-      const response = await toast.promise(
-        fetch('/api/send-email', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data),
-        }),
-        {
-          pending: 'E-mail já está sendo enviado!',
-          success: 'E-mail enviado com Sucesso!',
-          error: 'Erro ao enviar e-mail!',
-        },
-        TOAST_CONFIG,
-      );
-      if (response.ok) {
-        reset();
-      }
+    async (values: EmailSchema) => {
+      mutate({ ...values, service: select });
     },
-    [reset, select],
+    [select, mutate],
   );
 
   useEffect(() => {
     setSelect(onChange);
   }, [onChange, setSelect]);
+
+  const notify = useCallback(() => {
+    if (isLoading && !isSuccess) {
+      toast.info('E-mail já está sendo enviado!');
+    }
+
+    if (isSuccess && !isLoading) {
+      toast.success('E-mail enviado com Sucesso!');
+      reset();
+    }
+
+    if (isError) {
+      toast.error('Erro ao enviar e-mail!');
+    }
+  }, [isSuccess, isLoading, isError, reset]);
+
+  useEffect(() => {
+    notify();
+  }, [notify]);
 
   return (
     <section className="relative mx-0 flex h-[520px] w-11/12 max-w-[425px] flex-col">
@@ -125,7 +127,7 @@ export function Formulario() {
               type="email"
               id="email"
               className="w-full rounded border border-solid border-black p-2"
-              {...register('email', { required: true, pattern: regex })}
+              {...register('email', { required: true })}
             />
           </div>
         </div>

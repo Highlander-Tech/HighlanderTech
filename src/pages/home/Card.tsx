@@ -72,7 +72,7 @@ function Card({
         height={540}
         width={540}
         blurDataURL={base64}
-        placeholder="blur"
+        // placeholder="blur"
       />
     </section>
   );

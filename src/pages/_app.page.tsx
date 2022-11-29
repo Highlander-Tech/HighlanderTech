@@ -5,6 +5,7 @@ import Router from 'next/router';
 import NProgress from 'nprogress';
 import { useEffect } from 'react';
 import { Layout } from '../components';
+import { trpc } from 'utils/trpc';
 
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/nprogress.css';
@@ -32,4 +33,4 @@ function App({ Component, pageProps }: AppProps) {
   );
 }
 
-export default App;
+export default trpc.withTRPC(App);
